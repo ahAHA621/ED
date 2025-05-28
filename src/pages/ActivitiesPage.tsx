@@ -1,24 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Star, Lock } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Card from '../components/ui/Card';
 import activityData from '../data/activitiesData';
-import { useAuth } from '../contexts/AuthContext';
-import Button from '../components/ui/Button';
 
 const ActivityPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
   const filteredActivities = activityData.filter(activity =>
     activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     activity.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Check if user has an active subscription
-  const hasSubscription = user?.subscription && user.subscription !== 'free';
 
   return (
     <div className="py-12 md:py-16 bg-gray-50 min-h-screen">
@@ -40,28 +33,6 @@ const ActivityPage = () => {
           >
             Explore fun, interactive TinyTap activities to boost your learning experience!
           </motion.p>
-          
-          {!hasSubscription && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-6 bg-primary-50 p-6 rounded-xl border border-primary-100"
-            >
-              <h3 className="text-xl font-bold text-primary-800 mb-2">
-                Unlock All Activities
-              </h3>
-              <p className="text-primary-600 mb-4">
-                Subscribe to access our complete collection of educational activities!
-              </p>
-              <Button
-                variant="primary"
-                onClick={() => navigate('/subscription')}
-              >
-                View Subscription Plans
-              </Button>
-            </motion.div>
-          )}
         </div>
 
         <div className="mb-10">
@@ -91,53 +62,13 @@ const ActivityPage = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
-                {hasSubscription ? (
-                  <Link to={`/activities/${activity.id}`}>
-                    <Card hover>
-                      <Card.Image 
-                        src={activity.imageUrl} 
-                        alt={activity.title}
-                        className="h-48"
-                      />
-                      <Card.Content>
-                        <div className="flex gap-2 mb-3">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-800">
-                            {activity.category}
-                          </span>
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
-                            Ages {activity.ageRange}
-                          </span>
-                        </div>
-                        <Card.Title>{activity.title}</Card.Title>
-                        <Card.Description>{activity.description}</Card.Description>
-                        <div className="flex items-center mt-4 text-sm text-gray-600">
-                          <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                          <span>Difficulty: </span>
-                          <span className="ml-1 capitalize">{activity.difficulty}</span>
-                        </div>
-                      </Card.Content>
-                      <Card.Footer>
-                        <button className="w-full py-2 px-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                          Try Activity
-                        </button>
-                      </Card.Footer>
-                    </Card>
-                  </Link>
-                ) : (
-                  <Card>
-                    <div className="relative">
-                      <Card.Image 
-                        src={activity.imageUrl} 
-                        alt={activity.title}
-                        className="h-48 filter blur-sm"
-                      />
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <div className="text-white text-center">
-                          <Lock className="h-8 w-8 mx-auto mb-2" />
-                          <p className="font-medium">Subscribe to Access</p>
-                        </div>
-                      </div>
-                    </div>
+                <Link to={`/activities/${activity.id}`}>
+                  <Card hover>
+                    <Card.Image 
+                      src={activity.imageUrl} 
+                      alt={activity.title}
+                      className="h-48"
+                    />
                     <Card.Content>
                       <div className="flex gap-2 mb-3">
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-800">
@@ -151,16 +82,12 @@ const ActivityPage = () => {
                       <Card.Description>{activity.description}</Card.Description>
                     </Card.Content>
                     <Card.Footer>
-                      <Button
-                        variant="primary"
-                        fullWidth
-                        onClick={() => navigate('/subscription')}
-                      >
-                        Subscribe to Access
-                      </Button>
+                      <button className="w-full py-2 px-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                        Try Activity
+                      </button>
                     </Card.Footer>
                   </Card>
-                )}
+                </Link>
               </motion.div>
             ))}
           </div>

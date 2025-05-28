@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, BookOpen, Activity, User, Calendar, Award, ChevronRight, Star, Clock, Settings } from 'lucide-react';
+import { BarChart3, Brain, Award, Users, Calendar, Activity, ChevronRight, Star, Clock, Settings } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useAuth } from '../contexts/AuthContext';
@@ -58,9 +58,7 @@ const DashboardPage = () => {
   const activeChildData = childProfiles[childProfile];
   
   // Recommended games based on the child's progress
-  const recommendedGames = gamesData
-    .filter(game => !game.isLocked)
-    .slice(0, 4);
+  const recommendedGames = gamesData.slice(0, 4);
   
   return (
     <div className="py-10 bg-gray-50 min-h-screen">
@@ -70,83 +68,8 @@ const DashboardPage = () => {
             <h1 className="font-nunito font-bold text-3xl text-gray-800 mb-2">
               Welcome back, {user?.name}!
             </h1>
-            <p className="text-gray-600">
-              {user?.subscription === 'free' 
-                ? 'You\'re on the Free plan. Unlock more features with a subscription!'
-                : `You have a ${user?.subscription} subscription. Enjoy full access!`
-              }
-            </p>
           </div>
-          
-          {user?.subscription === 'free' && (
-            <Link to="/subscription" className="mt-4 md:mt-0">
-              <Button 
-                variant="primary"
-                size="sm"
-              >
-                Upgrade
-              </Button>
-            </Link>
-          )}
         </div>
-        
-        {/* Child Profile Selector */}
-        {user?.subscription !== 'free' && (
-          <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
-            <h2 className="font-nunito font-medium text-lg text-gray-800 mb-4">Child Profiles</h2>
-            <div className="flex space-x-4">
-              <button
-                onClick={() => setChildProfile('child1')}
-                className={`flex flex-col items-center p-3 rounded-lg transition-colors ${
-                  childProfile === 'child1' 
-                    ? 'bg-primary-50 border-2 border-primary-200' 
-                    : 'bg-gray-50 hover:bg-gray-100'
-                }`}
-              >
-                <div className="w-16 h-16 rounded-full overflow-hidden mb-2">
-                  <img 
-                    src={childProfiles.child1.avatar} 
-                    alt={childProfiles.child1.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className="font-medium text-gray-800">{childProfiles.child1.name}</span>
-                <span className="text-xs text-gray-500">Age {childProfiles.child1.age}</span>
-              </button>
-              
-              <button
-                onClick={() => setChildProfile('child2')}
-                className={`flex flex-col items-center p-3 rounded-lg transition-colors ${
-                  childProfile === 'child2' 
-                    ? 'bg-primary-50 border-2 border-primary-200' 
-                    : 'bg-gray-50 hover:bg-gray-100'
-                }`}
-              >
-                <div className="w-16 h-16 rounded-full overflow-hidden mb-2">
-                  <img 
-                    src={childProfiles.child2.avatar} 
-                    alt={childProfiles.child2.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className="font-medium text-gray-800">{childProfiles.child2.name}</span>
-                <span className="text-xs text-gray-500">Age {childProfiles.child2.age}</span>
-              </button>
-              
-              {user?.subscription === 'premium' && (
-                <button
-                  className="flex flex-col items-center justify-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mb-2">
-                    <Plus className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <span className="font-medium text-gray-800">Add Child</span>
-                  <span className="text-xs text-gray-500">3 slots left</span>
-                </button>
-              )}
-            </div>
-          </div>
-        )}
         
         {/* Dashboard Tabs */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
@@ -214,7 +137,7 @@ const DashboardPage = () => {
                   <OverviewCard 
                     title="Current Level"
                     value={activeChildData.level}
-                    icon={<User className="h-6 w-6 text-secondary-500" />}
+                    icon={<Users className="h-6 w-6 text-secondary-500" />}
                     color="secondary"
                   />
                   <OverviewCard 
@@ -370,7 +293,7 @@ const DashboardPage = () => {
                 <Settings className="h-16 w-16 text-primary-300 mx-auto mb-4" />
                 <h3 className="text-xl font-medium text-gray-800 mb-2">Account Settings</h3>
                 <p className="text-gray-600 mb-6">
-                  Manage profiles, subscription, privacy settings, and preferences.
+                  Manage profiles, privacy settings, and preferences.
                 </p>
                 <Button variant="primary">Manage Settings</Button>
               </div>
@@ -423,21 +346,5 @@ const ProgressBar = ({ label, value, color }: ProgressBarProps) => {
     </div>
   );
 };
-
-const Plus = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <line x1="12" y1="5" x2="12" y2="19"></line>
-    <line x1="5" y1="12" x2="19" y2="12"></line>
-  </svg>
-);
 
 export default DashboardPage;
