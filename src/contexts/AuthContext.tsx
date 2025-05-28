@@ -11,6 +11,7 @@ import { User } from '@supabase/supabase-js';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  hasSubscription: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -28,22 +29,47 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [hasSubscription, setHasSubscription] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkSubscription(session.user.id);
+      }
     });
 
     // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkSubscription(session.user.id);
+      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
   }, []);
+
+  const checkSubscription = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .gte('ends_at', new Date().toISOString())
+        .single();
+
+      if (error) throw error;
+      setHasSubscription(!!data);
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+      setHasSubscription(false);
+    }
+  };
 
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -84,6 +110,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         isAuthenticated: !!user,
+        hasSubscription,
         login,
         register,
         logout,
