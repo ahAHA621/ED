@@ -12,9 +12,6 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import SubscriptionPage from './pages/SubscriptionPage';
-import CardDetailsPage from './pages/CardDetailsPage';
-import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -37,25 +34,8 @@ function App() {
           <Route path="contact" element={<ContactPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
-          <Route path="subscription" element={<SubscriptionPage />} />
           
           {/* Protected routes */}
-          <Route
-            path="subscription/card-details"
-            element={
-              <ProtectedRoute>
-                <CardDetailsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="subscription/success"
-            element={
-              <ProtectedRoute>
-                <SubscriptionSuccessPage />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="dashboard"
             element={
