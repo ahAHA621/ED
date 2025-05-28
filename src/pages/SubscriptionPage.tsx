@@ -2,14 +2,30 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 import subscriptionPlans from '../data/subscriptionData';
 import Button from '../components/ui/Button';
 
 const SubscriptionPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    cardNumber: '',
+    expiryDate: '',
+    cvv: ''
+  });
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubscribe = async (planId: string) => {
     try {
@@ -21,8 +37,22 @@ const SubscriptionPage = () => {
         return;
       }
 
-      // Navigate to card details page with plan info
-      navigate('/subscription/card-details', { 
+      // Store subscription in Supabase
+      const { error: subscriptionError } = await supabase
+        .from('subscriptions')
+        .insert([
+          {
+            user_id: user.id,
+            plan: planId,
+            status: 'active',
+            current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+          }
+        ]);
+
+      if (subscriptionError) throw subscriptionError;
+
+      // Navigate to success page
+      navigate('/subscription/success', { 
         state: { planId } 
       });
       
@@ -118,37 +148,6 @@ const SubscriptionPage = () => {
               </Button>
             </motion.div>
           ))}
-        </div>
-
-        <div className="max-w-2xl mx-auto mt-12 bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
-            Subscription FAQs
-          </h2>
-          <dl className="space-y-6">
-            <div>
-              <dt className="font-medium text-gray-900">When will I be charged?</dt>
-              <dd className="mt-2 text-gray-600">
-                You'll be charged immediately upon subscribing, and then on the same
-                date each month/year depending on your plan.
-              </dd>
-            </div>
-            <div>
-              <dt className="font-medium text-gray-900">Can I cancel anytime?</dt>
-              <dd className="mt-2 text-gray-600">
-                Yes, you can cancel your subscription at any time. You'll continue
-                to have access until the end of your billing period.
-              </dd>
-            </div>
-            <div>
-              <dt className="font-medium text-gray-900">
-                Is there a refund policy?
-              </dt>
-              <dd className="mt-2 text-gray-600">
-                We offer a 30-day money-back guarantee if you're not satisfied with
-                your subscription.
-              </dd>
-            </div>
-          </dl>
         </div>
       </div>
     </div>
