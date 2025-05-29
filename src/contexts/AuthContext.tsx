@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .eq('user_id', userId)
         .eq('status', 'active')
         .gte('ends_at', new Date().toISOString())
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       setHasSubscription(!!data);
